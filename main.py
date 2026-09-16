@@ -1,472 +1,394 @@
 import streamlit as st
 import random
+import hashlib
+import time
 
-# --------------------------------------------------
-# 기본 설정
-# --------------------------------------------------
+# ==========================================
+# 페이지 설정
+# ==========================================
 st.set_page_config(
-    page_title="MBTI 여행지 추천 💕",
-    page_icon="🌷",
+    page_title="그 이름을 입력하지 마세요...",
+    page_icon="👁️",
     layout="centered"
 )
 
-# --------------------------------------------------
-# 귀여운 CSS
-# --------------------------------------------------
+# ==========================================
+# CSS - 어둡고 무서운 분위기
+# ==========================================
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
     .stApp {
-        background: linear-gradient(180deg, #fff7fb 0%, #f8f4ff 100%);
+        background:
+            radial-gradient(circle at 50% 20%, #24111c 0%, #0d080c 35%, #030304 100%);
+        color: #ddd;
     }
 
     .main-title {
         text-align: center;
-        color: #ff7eb6;
+        font-family: 'Cinzel', serif;
         font-size: 42px;
-        font-weight: 800;
-        margin-bottom: 5px;
+        font-weight: 700;
+        color: #d8a0ad;
+        text-shadow:
+            0 0 8px #8f263f,
+            0 0 20px #5a1025;
+        margin-top: 20px;
     }
 
-    .sub-title {
+    .warning {
         text-align: center;
-        color: #8d7b9d;
-        font-size: 17px;
-        margin-bottom: 30px;
-    }
-
-    .card {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 25px;
-        padding: 25px;
-        margin: 15px 0;
-        box-shadow: 0 8px 25px rgba(220, 170, 210, 0.18);
-        border: 2px solid #ffe1ef;
-    }
-
-    .destination {
-        color: #ff6fae;
-        font-size: 30px;
-        font-weight: 800;
-        text-align: center;
-    }
-
-    .reason {
-        color: #66556f;
-        font-size: 17px;
-        line-height: 1.7;
-        text-align: center;
-    }
-
-    .tag {
-        display: inline-block;
-        background-color: #ffe5f0;
-        color: #e85d9b;
-        border-radius: 20px;
-        padding: 6px 12px;
-        margin: 3px;
+        color: #8e6872;
         font-size: 14px;
+        letter-spacing: 2px;
+        margin-bottom: 35px;
     }
 
-    .footer {
+    .eye {
         text-align: center;
-        color: #aaa0ad;
-        font-size: 13px;
-        margin-top: 40px;
+        font-size: 70px;
+        color: #8f263f;
+        text-shadow: 0 0 25px #b92f50;
+        margin-bottom: -10px;
+    }
+
+    .input-card {
+        background: rgba(20, 12, 17, 0.9);
+        border: 1px solid #49202d;
+        border-radius: 8px;
+        padding: 28px;
+        box-shadow:
+            0 0 30px rgba(110, 20, 50, 0.15),
+            inset 0 0 20px rgba(0,0,0,0.5);
+        margin-bottom: 25px;
+    }
+
+    .result-card {
+        background:
+            linear-gradient(
+                135deg,
+                rgba(28, 13, 20, 0.98),
+                rgba(8, 7, 10, 0.98)
+            );
+        border: 1px solid #642639;
+        border-radius: 5px;
+        padding: 30px;
+        margin-top: 25px;
+        box-shadow:
+            0 0 35px rgba(130, 20, 55, 0.25),
+            inset 0 0 30px rgba(0,0,0,0.6);
+    }
+
+    .name-result {
+        text-align: center;
+        color: #c77c8e;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .fortune-title {
+        text-align: center;
+        color: #e4b5bf;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 10px 0 25px;
+        text-shadow: 0 0 10px #712238;
+    }
+
+    .fortune-text {
+        color: #c8b7bc;
+        font-size: 17px;
+        line-height: 2;
+        text-align: center;
+    }
+
+    .red-text {
+        color: #b43b57;
+        font-weight: bold;
+    }
+
+    .small-warning {
+        text-align: center;
+        color: #66535a;
+        font-size: 12px;
+        margin-top: 30px;
+        line-height: 1.8;
+    }
+
+    div.stButton > button {
+        background: linear-gradient(135deg, #501728, #781d37);
+        color: #ead5da;
+        border: 1px solid #8c3048;
+        border-radius: 4px;
+        font-size: 17px;
+        padding: 12px;
+        transition: all 0.3s;
+    }
+
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, #721d36, #a32a4b);
+        color: white;
+        box-shadow: 0 0 20px rgba(170, 35, 70, 0.4);
+    }
+
+    input {
+        background-color: #100b0e !important;
+        color: #e0cbd0 !important;
+        border: 1px solid #4a2630 !important;
+    }
+
+    .divider {
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            #652438,
+            transparent
+        );
+        margin: 25px 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# 여행지 데이터
-# --------------------------------------------------
-travel_data = {
-    "INFP": [
-        {
-            "place": "교토 🇯🇵",
-            "reason": "조용한 골목길을 천천히 걷고 예쁜 카페에서 감성 충전하기 좋아요.",
-            "tags": ["감성여행", "카페", "고즈넉함"]
-        },
-        {
-            "place": "제주도 🇰🇷",
-            "reason": "푸른 바다와 예쁜 오름을 바라보며 나만의 시간을 보내기 딱 좋아요.",
-            "tags": ["힐링", "자연", "감성"]
-        },
-        {
-            "place": "파리 🇫🇷",
-            "reason": "예술과 낭만이 가득한 도시에서 마음껏 상상하고 산책해 보세요.",
-            "tags": ["예술", "낭만", "산책"]
-        }
-    ],
 
-    "ENFP": [
-        {
-            "place": "방콕 🇹🇭",
-            "reason": "맛있는 음식부터 야시장, 쇼핑까지 신나는 경험이 가득해요!",
-            "tags": ["맛집", "쇼핑", "액티비티"]
-        },
-        {
-            "place": "런던 🇬🇧",
-            "reason": "새로운 사람과 문화, 볼거리를 만나는 재미가 쏠쏠한 도시예요.",
-            "tags": ["문화", "도시", "모험"]
-        },
-        {
-            "place": "부산 🇰🇷",
-            "reason": "바다도 보고 맛있는 것도 먹고 밤에는 신나게 놀아봐요!",
-            "tags": ["바다", "맛집", "놀거리"]
-        }
-    ],
+# ==========================================
+# 데이터
+# ==========================================
 
-    "INFJ": [
-        {
-            "place": "후쿠오카 🇯🇵",
-            "reason": "여유로운 분위기 속에서 맛있는 음식과 작은 행복을 발견할 수 있어요.",
-            "tags": ["힐링", "소도시", "맛집"]
-        },
-        {
-            "place": "스위스 🇨🇭",
-            "reason": "웅장한 자연을 바라보며 마음을 정리하고 재충전하기 좋아요.",
-            "tags": ["자연", "힐링", "풍경"]
-        },
-        {
-            "place": "경주 🇰🇷",
-            "reason": "역사와 고즈넉한 풍경 속에서 천천히 생각에 잠겨보세요.",
-            "tags": ["역사", "고즈넉함", "산책"]
-        }
-    ],
+omens = [
+    {
+        "title": "붉은 달의 기운",
+        "message": "당신의 이름에는 이상하게도 붉은 기운이 남아 있습니다. "
+                   "가까운 시일 안에 잊고 있던 사람이나 장소를 다시 마주하게 될 수 있습니다.",
+        "warning": "특히 밤늦게 걸려오는 전화 한 통을 조심하세요."
+    },
+    {
+        "title": "문 뒤에 남은 기척",
+        "message": "당신 주변에 아직 끝나지 않은 일이 하나 있습니다. "
+                   "이미 지나갔다고 생각했던 일이 다른 모습으로 다시 나타날 수 있습니다.",
+        "warning": "혼자 있을 때 문밖에서 나는 작은 소리에 귀를 기울이지 마세요."
+    },
+    {
+        "title": "검은 실",
+        "message": "당신의 이름을 따라 아주 가느다란 인연의 실이 이어져 있습니다. "
+                   "끊어진 줄 알았던 관계가 다시 이어질 가능성이 보입니다.",
+        "warning": "오래 연락하지 않은 사람의 이름을 먼저 부르지는 마세요."
+    },
+    {
+        "title": "새벽 3시의 그림자",
+        "message": "당신의 기운에는 밤의 흔적이 강하게 남아 있습니다. "
+                   "새벽에 갑자기 눈을 뜨는 날이 있다면 주변을 천천히 둘러보세요.",
+        "warning": "그 시간에는 거울을 오래 바라보지 않는 것이 좋습니다."
+    },
+    {
+        "title": "뒤돌아보지 마세요",
+        "message": "당신에게는 앞으로 나아가는 기운과 뒤에서 붙잡는 기운이 동시에 보입니다. "
+                   "과거의 선택에 대한 생각이 갑자기 강해질 수 있습니다.",
+        "warning": "밤길에서 누군가 부르는 것 같아도 바로 뒤돌아보지는 마세요."
+    },
+    {
+        "title": "빈 의자",
+        "message": "당신의 운세에는 이상하게도 '자리'라는 상징이 반복됩니다. "
+                   "누군가 떠난 자리에 새로운 인연이 들어오는 흐름입니다.",
+        "warning": "혼자 있는 방에서 의자를 마주 보고 오래 앉아 있지는 마세요."
+    },
+    {
+        "title": "이름을 부르는 소리",
+        "message": "당신의 이름은 소리로 불렸을 때 특별한 기운을 갖습니다. "
+                   "가까운 시기에 누군가가 예상하지 못한 순간 당신의 이름을 부르게 됩니다.",
+        "warning": "처음 듣는 목소리라면 대답하기 전에 잠시 멈추세요."
+    },
+    {
+        "title": "닫힌 문",
+        "message": "현재 당신 앞에는 하나의 닫힌 문이 보입니다. "
+                   "하지만 그 문은 막힌 것이 아니라 아직 열 때가 되지 않은 문입니다.",
+        "warning": "급하게 결정하지 마세요. 이상하게 마음에 걸리는 선택은 하루 정도 미뤄보세요."
+    }
+]
 
-    "ENFJ": [
-        {
-            "place": "하와이 🇺🇸",
-            "reason": "사랑하는 사람들과 함께라면 행복이 두 배! 바다와 액티비티를 즐겨보세요.",
-            "tags": ["휴양", "친구", "바다"]
-        },
-        {
-            "place": "파리 🇫🇷",
-            "reason": "사람들과 함께 아름다운 풍경과 맛있는 음식을 즐기기 좋은 곳이에요.",
-            "tags": ["낭만", "문화", "맛집"]
-        },
-        {
-            "place": "서울 🇰🇷",
-            "reason": "친구들과 맛집, 카페, 쇼핑을 모두 즐길 수 있는 다채로운 여행지예요.",
-            "tags": ["도시", "쇼핑", "친구"]
-        }
-    ],
+# ==========================================
+# 이름 기반 랜덤 선택
+# ==========================================
 
-    "INTP": [
-        {
-            "place": "도쿄 🇯🇵",
-            "reason": "첨단 기술부터 독특한 서브컬처까지 호기심을 자극하는 것이 가득해요.",
-            "tags": ["테크", "서브컬처", "탐험"]
-        },
-        {
-            "place": "싱가포르 🇸🇬",
-            "reason": "깔끔하고 독특한 도시 시스템과 다양한 문화를 탐험해 보세요.",
-            "tags": ["도시", "문화", "탐험"]
-        },
-        {
-            "place": "대전 🇰🇷",
-            "reason": "과학과 연구의 도시에서 색다른 여행의 재미를 찾아보세요.",
-            "tags": ["과학", "도시", "탐구"]
-        }
-    ],
+def get_result(name):
+    """
+    같은 이름을 입력하면 어느 정도 일관된 결과가 나오도록
+    이름을 해시값으로 변환합니다.
+    """
+    seed_value = int(
+        hashlib.sha256(name.encode("utf-8")).hexdigest(),
+        16
+    )
 
-    "ENTP": [
-        {
-            "place": "뉴욕 🇺🇸",
-            "reason": "매일 새로운 일이 벌어지는 곳! 지루할 틈 없이 도시를 탐험해 보세요.",
-            "tags": ["도시", "문화", "모험"]
-        },
-        {
-            "place": "홍콩 🇭🇰",
-            "reason": "복잡하고 빠르게 움직이는 도시에서 새로운 자극을 마음껏 받아보세요.",
-            "tags": ["야경", "맛집", "도시"]
-        },
-        {
-            "place": "부산 🇰🇷",
-            "reason": "바다부터 시장, 카페까지 예상하지 못한 재미를 발견하기 좋아요.",
-            "tags": ["바다", "탐험", "먹방"]
-        }
-    ],
+    rng = random.Random(seed_value)
 
-    "INTJ": [
-        {
-            "place": "스위스 🇨🇭",
-            "reason": "정교하게 계획한 일정과 아름다운 자연을 함께 즐길 수 있어요.",
-            "tags": ["자연", "계획", "풍경"]
-        },
-        {
-            "place": "도쿄 🇯🇵",
-            "reason": "효율적인 도시 시스템과 다양한 볼거리를 체계적으로 탐험해 보세요.",
-            "tags": ["효율", "도시", "문화"]
-        },
-        {
-            "place": "제주도 🇰🇷",
-            "reason": "렌터카로 원하는 장소를 직접 계획해서 돌아보기 좋아요.",
-            "tags": ["자유여행", "자연", "계획"]
-        }
-    ],
+    omen = rng.choice(omens)
 
-    "ENTJ": [
-        {
-            "place": "뉴욕 🇺🇸",
-            "reason": "빠르고 역동적인 도시에서 쇼핑과 미식, 문화생활을 모두 즐겨보세요.",
-            "tags": ["도시", "쇼핑", "미식"]
-        },
-        {
-            "place": "싱가포르 🇸🇬",
-            "reason": "깔끔하고 효율적인 도시를 알차게 돌아다니는 여행이 잘 어울려요.",
-            "tags": ["도시", "효율", "미식"]
-        },
-        {
-            "place": "서울 🇰🇷",
-            "reason": "빠르게 변화하는 도시에서 새로운 트렌드를 경험해 보세요.",
-            "tags": ["트렌드", "도시", "쇼핑"]
-        }
-    ],
-
-    "ISFP": [
-        {
-            "place": "제주도 🇰🇷",
-            "reason": "예쁜 바다와 자연을 바라보며 천천히 나만의 여행을 즐겨보세요.",
-            "tags": ["자연", "감성", "힐링"]
-        },
-        {
-            "place": "오키나와 🇯🇵",
-            "reason": "따뜻한 햇살과 푸른 바다 속에서 여유로운 시간을 보내기 좋아요.",
-            "tags": ["바다", "휴양", "감성"]
-        },
-        {
-            "place": "통영 🇰🇷",
-            "reason": "작고 예쁜 항구 도시에서 맛있는 음식과 풍경을 즐겨보세요.",
-            "tags": ["바다", "소도시", "맛집"]
-        }
-    ],
-
-    "ESFP": [
-        {
-            "place": "부산 🇰🇷",
-            "reason": "바다에서 놀고 맛있는 것도 먹고 신나게 즐겨봐요!",
-            "tags": ["바다", "먹방", "액티비티"]
-        },
-        {
-            "place": "방콕 🇹🇭",
-            "reason": "화려한 야시장과 맛있는 음식, 쇼핑까지 재미있는 게 너무 많아요!",
-            "tags": ["야시장", "맛집", "쇼핑"]
-        },
-        {
-            "place": "하와이 🇺🇸",
-            "reason": "햇살 가득한 해변에서 신나게 놀고 인생 사진도 남겨보세요.",
-            "tags": ["휴양", "바다", "사진"]
-        }
-    ],
-
-    "ISFJ": [
-        {
-            "place": "후쿠오카 🇯🇵",
-            "reason": "편안하고 아늑한 분위기에서 맛있는 음식과 소소한 행복을 즐겨보세요.",
-            "tags": ["힐링", "맛집", "소도시"]
-        },
-        {
-            "place": "경주 🇰🇷",
-            "reason": "천천히 걸으며 아름다운 문화유산을 구경하기 좋아요.",
-            "tags": ["역사", "산책", "힐링"]
-        },
-        {
-            "place": "교토 🇯🇵",
-            "reason": "차분한 분위기 속에서 전통적인 일본의 매력을 느껴보세요.",
-            "tags": ["전통", "산책", "감성"]
-        }
-    ],
-
-    "ESFJ": [
-        {
-            "place": "파리 🇫🇷",
-            "reason": "친구나 가족과 함께 맛있는 음식과 아름다운 풍경을 즐겨보세요.",
-            "tags": ["가족", "맛집", "낭만"]
-        },
-        {
-            "place": "서울 🇰🇷",
-            "reason": "사람들과 함께 맛집과 카페, 쇼핑을 즐기기에 최고의 도시예요.",
-            "tags": ["친구", "맛집", "쇼핑"]
-        },
-        {
-            "place": "후쿠오카 🇯🇵",
-            "reason": "맛있는 음식과 편안한 여행 분위기로 함께 가는 사람도 행복해져요.",
-            "tags": ["맛집", "친구", "힐링"]
-        }
-    ],
-
-    "ISTP": [
-        {
-            "place": "제주도 🇰🇷",
-            "reason": "렌터카를 타고 마음 가는 곳으로 떠나는 자유로운 여행을 즐겨보세요.",
-            "tags": ["드라이브", "자유", "자연"]
-        },
-        {
-            "place": "뉴질랜드 🇳🇿",
-            "reason": "광활한 자연 속에서 액티비티와 모험을 즐길 수 있어요.",
-            "tags": ["자연", "모험", "액티비티"]
-        },
-        {
-            "place": "오키나와 🇯🇵",
-            "reason": "바다에서 다양한 액티비티를 즐기며 자유롭게 돌아다녀 보세요.",
-            "tags": ["바다", "자유", "액티비티"]
-        }
-    ],
-
-    "ESTP": [
-        {
-            "place": "라스베이거스 🇺🇸",
-            "reason": "화려한 볼거리와 다양한 액티비티로 에너지를 마음껏 발산해 보세요.",
-            "tags": ["액티비티", "화려함", "도시"]
-        },
-        {
-            "place": "방콕 🇹🇭",
-            "reason": "먹고 쇼핑하고 돌아다니며 도시의 에너지를 제대로 느껴보세요.",
-            "tags": ["먹방", "쇼핑", "모험"]
-        },
-        {
-            "place": "부산 🇰🇷",
-            "reason": "바다와 맛집과 다양한 놀거리를 한 번에 즐길 수 있어요.",
-            "tags": ["바다", "맛집", "놀거리"]
-        }
-    ],
-
-    "ISTJ": [
-        {
-            "place": "교토 🇯🇵",
-            "reason": "정돈된 여행 일정으로 전통적인 명소들을 차근차근 둘러보기 좋아요.",
-            "tags": ["전통", "계획", "문화"]
-        },
-        {
-            "place": "싱가포르 🇸🇬",
-            "reason": "깔끔하고 체계적인 도시를 편안하게 여행할 수 있어요.",
-            "tags": ["깔끔함", "도시", "문화"]
-        },
-        {
-            "place": "경주 🇰🇷",
-            "reason": "역사적인 장소들을 하나씩 둘러보며 의미 있는 여행을 만들어 보세요.",
-            "tags": ["역사", "문화", "계획"]
-        }
-    ],
-
-    "ESTJ": [
-        {
-            "place": "서울 🇰🇷",
-            "reason": "볼거리와 먹거리, 쇼핑을 효율적으로 정리해서 알차게 여행할 수 있어요.",
-            "tags": ["도시", "쇼핑", "효율"]
-        },
-        {
-            "place": "도쿄 🇯🇵",
-            "reason": "효율적인 교통과 다양한 관광지를 활용해 꽉 찬 여행을 만들어 보세요.",
-            "tags": ["도시", "계획", "쇼핑"]
-        },
-        {
-            "place": "싱가포르 🇸🇬",
-            "reason": "깨끗하고 체계적인 도시에서 계획적인 여행을 즐겨보세요.",
-            "tags": ["계획", "도시", "깔끔함"]
-        }
+    numbers = [
+        rng.randint(1, 9),
+        rng.randint(1, 9),
+        rng.randint(1, 9)
     ]
-}
 
-# --------------------------------------------------
-# 화면
-# --------------------------------------------------
+    symbols = [
+        "달 🌙",
+        "까마귀 🐦‍⬛",
+        "붉은 꽃 🥀",
+        "열쇠 🗝️",
+        "거울 🪞",
+        "초승달 🌘",
+        "검은 나비 🦋"
+    ]
+
+    symbol = rng.choice(symbols)
+
+    return omen, numbers, symbol
+
+
+# ==========================================
+# 메인 화면
+# ==========================================
+
 st.markdown(
-    '<div class="main-title">🌷 MBTI 여행지 추천 🌷</div>',
+    '<div class="eye">👁️</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '<div class="sub-title">나의 MBTI와 찰떡궁합인 여행지를 찾아볼까요? ✈️💕</div>',
+    '<div class="main-title">그 이름을<br>입력하지 마세요...</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="warning">당신의 이름을 알고 있습니다.</div>',
     unsafe_allow_html=True
 )
 
 st.markdown("""
-<div class="card">
-    <h3 style="text-align:center; color:#ff80b5;">
-        💌 여행을 떠나기 전에...
-    </h3>
-    <p style="text-align:center; color:#777;">
-        당신의 MBTI를 골라주세요!<br>
-        귀여운 여행 추천 요정이 여행지를 골라드릴게요 🧚‍♀️✨
+<div class="input-card">
+    <p style="
+        text-align:center;
+        color:#a98992;
+        font-size:15px;
+        letter-spacing:1px;
+    ">
+        이름을 입력하면<br>
+        당신에게 남아 있는 기운을 읽어드립니다.
     </p>
 </div>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# MBTI 선택
-# --------------------------------------------------
-mbti_list = [
-    "INFP", "ENFP", "INFJ", "ENFJ",
-    "INTP", "ENTP", "INTJ", "ENTJ",
-    "ISFP", "ESFP", "ISFJ", "ESFJ",
-    "ISTP", "ESTP", "ISTJ", "ESTJ"
-]
 
-mbti = st.selectbox(
-    "💗 나의 MBTI는?",
-    mbti_list,
-    index=0
+# ==========================================
+# 이름 입력
+# ==========================================
+
+name = st.text_input(
+    "이름",
+    placeholder="당신의 이름을 입력하세요...",
+    label_visibility="collapsed"
 )
 
 st.markdown("")
 
-# --------------------------------------------------
-# 추천 버튼
-# --------------------------------------------------
-if st.button("🎀 나에게 딱 맞는 여행지 찾기 🎀", use_container_width=True):
 
-    destination = random.choice(travel_data[mbti])
+# ==========================================
+# 버튼
+# ==========================================
 
-    st.balloons()
+if st.button(
+    "👁️ 내 이름의 기운을 확인한다",
+    use_container_width=True
+):
 
-    st.markdown("""
-    <div class="card">
-        <div style="text-align:center; font-size:45px;">🎉</div>
-        <div style="text-align:center; color:#9b7aaa; font-size:18px;">
-            당신에게 추천하는 여행지는...
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    if not name.strip():
+        st.warning("이름을 입력하세요.")
 
-    st.markdown(
-        f"""
-        <div class="card">
-            <div class="destination">{destination["place"]}</div>
-            <br>
-            <div class="reason">{destination["reason"]}</div>
-            <br>
-            <div style="text-align:center;">
-                {" ".join(
-                    f'<span class="tag">#{tag}</span>'
-                    for tag in destination["tags"]
-                )}
+    else:
+        # 로딩 연출
+        with st.spinner("이름의 흔적을 읽고 있습니다..."):
+            time.sleep(1.2)
+
+        omen, numbers, symbol = get_result(name.strip())
+
+        st.markdown(
+            f"""
+            <div class="result-card">
+
+                <div class="name-result">
+                    「 {name.strip()} 」
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="fortune-title">
+                    {omen["title"]}
+                </div>
+
+                <div class="fortune-text">
+                    {omen["message"]}
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="
+                    text-align:center;
+                    color:#80656e;
+                    font-size:14px;
+                ">
+                    오늘의 기운을 상징하는 것
+                </div>
+
+                <div style="
+                    text-align:center;
+                    font-size:35px;
+                    margin:15px;
+                ">
+                    {symbol}
+                </div>
+
+                <div style="
+                    text-align:center;
+                    color:#9b7881;
+                    letter-spacing:8px;
+                    font-size:18px;
+                ">
+                    {" · ".join(map(str, numbers))}
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="small-warning">
+                    ⚠ {omen["warning"]}
+                </div>
+
             </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            """,
+            unsafe_allow_html=True
+        )
 
-    st.markdown(
-        f"""
-        <div class="card">
-            <p style="text-align:center; color:#777;">
-                💕 <b>{mbti}</b> 여행자님을 위한 작은 여행 팁 💕
-            </p>
-            <p style="text-align:center; color:#8d7b9d;">
-                너무 완벽하게 계획하지 말고,<br>
-                여행지에서 우연히 만나는 순간도 마음껏 즐겨보세요! 🌸
-            </p>
+        st.markdown("""
+        <div class="small-warning">
+            ─────────────────────<br>
+            이 결과는 공포 콘셉트의 엔터테인먼트 콘텐츠입니다.<br>
+            실제 미래나 초자연적인 현상을 예측하는 것은 아닙니다.
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# 다시 뽑기
-# --------------------------------------------------
-st.markdown(
-    '<div class="footer">🌸 MBTI 여행지 추천 요정이 당신의 행복한 여행을 응원해요 🌸</div>',
-    unsafe_allow_html=True
-)
+
+# ==========================================
+# 하단
+# ==========================================
+
+st.markdown("""
+<div style="
+    text-align:center;
+    margin-top:50px;
+    color:#3e3035;
+    font-size:11px;
+">
+    당신이 이 페이지를 닫은 뒤에도<br>
+    이름은 한동안 남아 있을 것입니다.
+</div>
+""", unsafe_allow_html=True)
