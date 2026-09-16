@@ -5,402 +5,949 @@ import re
 
 
 # =========================================================
-# 페이지 설정
+# PAGE
 # =========================================================
 
 st.set_page_config(
     page_title="THE DEBUT ARCHIVE",
-    page_icon="✦",
+    page_icon="⚡",
     layout="centered"
 )
 
 
 # =========================================================
-# 디자인
+# CRAZY BACKGROUND CSS
 # =========================================================
 
 st.markdown(
     """
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
+/* =======================================================
+   전체 화면
+   ======================================================= */
 
 .stApp {
+    min-height: 100vh;
+
     background:
         radial-gradient(
-            circle at 50% -10%,
-            #25252a 0%,
-            #101014 32%,
-            #08080b 68%,
-            #050506 100%
-        );
-    color: #eeeeee;
-}
-
-.block-container {
-    max-width: 820px;
-    padding-top: 55px;
-    padding-bottom: 80px;
-}
-
-
-/* ---------- 상단 ---------- */
-
-.archive-label {
-    text-align: center;
-    color: #77777f;
-    font-size: 11px;
-    letter-spacing: 5px;
-    font-weight: 600;
-    margin-bottom: 22px;
-}
-
-.main-title {
-    text-align: center;
-    color: #f2f2f4;
-    font-size: 52px;
-    font-weight: 900;
-    letter-spacing: -2px;
-    line-height: 1.05;
-    margin-bottom: 15px;
-}
-
-.main-title span {
-    color: #b9a7ff;
-}
-
-.main-subtitle {
-    text-align: center;
-    color: #7e7e87;
-    font-size: 14px;
-    letter-spacing: 1px;
-    line-height: 1.8;
-    margin-bottom: 45px;
-}
-
-
-/* ---------- 입력 영역 ---------- */
-
-.input-panel {
-    background: linear-gradient(
-        145deg,
-        rgba(31, 31, 37, 0.95),
-        rgba(14, 14, 18, 0.95)
-    );
-
-    border: 1px solid #303038;
-    padding: 30px;
-    border-radius: 4px;
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.03);
-
-    margin-bottom: 25px;
-}
-
-.input-label {
-    color: #aaaab3;
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.input-description {
-    color: #66666f;
-    font-size: 12px;
-    margin-bottom: 18px;
-}
-
-
-/* ---------- 버튼 ---------- */
-
-div.stButton > button {
-    width: 100%;
-
-    background:
+            circle at 15% 20%,
+            rgba(255, 0, 140, 0.28),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(90, 0, 255, 0.30),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 50% 90%,
+            rgba(0, 180, 255, 0.20),
+            transparent 28%
+        ),
         linear-gradient(
-            90deg,
-            #8c79e8,
-            #b09cff
+            120deg,
+            #020205,
+            #0b0313,
+            #02020a,
+            #12000e,
+            #020205
         );
+
+    background-size:
+        180% 180%,
+        200% 200%,
+        170% 170%,
+        400% 400%;
+
+    animation:
+        backgroundChaos 7s ease-in-out infinite alternate;
 
     color: #ffffff;
 
-    border: none;
-    border-radius: 3px;
-
-    font-size: 14px;
-    font-weight: 800;
-
-    letter-spacing: 1px;
-
-    padding: 14px;
-
-    box-shadow:
-        0 8px 25px rgba(130,110,230,0.22);
-
-    transition: 0.25s;
+    overflow-x: hidden;
 }
 
-div.stButton > button:hover {
+
+/* =======================================================
+   배경 움직임
+   ======================================================= */
+
+@keyframes backgroundChaos {
+
+    0% {
+        background-position:
+            0% 0%,
+            100% 0%,
+            50% 100%,
+            0% 50%;
+    }
+
+    25% {
+        background-position:
+            100% 20%,
+            0% 80%,
+            80% 0%,
+            100% 0%;
+    }
+
+    50% {
+        background-position:
+            20% 100%,
+            80% 10%,
+            0% 50%,
+            50% 100%;
+    }
+
+    75% {
+        background-position:
+            90% 60%,
+            10% 20%,
+            100% 80%,
+            0% 0%;
+    }
+
+    100% {
+        background-position:
+            0% 0%,
+            100% 100%,
+            30% 0%,
+            100% 100%;
+    }
+}
+
+
+/* =======================================================
+   화면 전체 번쩍이는 오버레이
+   ======================================================= */
+
+.stApp::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+
     background:
         linear-gradient(
-            90deg,
-            #a291ff,
-            #c0b1ff
+            115deg,
+            transparent 0%,
+            rgba(255, 0, 140, 0.08) 25%,
+            transparent 40%,
+            rgba(80, 0, 255, 0.08) 65%,
+            transparent 80%
         );
 
-    box-shadow:
-        0 10px 35px rgba(150,130,255,0.35);
+    background-size: 250% 250%;
+
+    animation:
+        lightSweep 3.5s linear infinite;
+
+    mix-blend-mode: screen;
 }
 
 
-/* ---------- 결과 ---------- */
+@keyframes lightSweep {
 
-.result-container {
-    margin-top: 35px;
+    0% {
+        background-position: -150% 0%;
+    }
+
+    100% {
+        background-position: 150% 100%;
+    }
+}
+
+
+/* =======================================================
+   미친 네온 플래시
+   ======================================================= */
+
+.stApp::after {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 1;
 
     background:
-        linear-gradient(
-            145deg,
-            #19191f,
-            #0d0d11
+        radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 0, 100, 0.12),
+            transparent 18%
+        ),
+        radial-gradient(
+            circle at 70% 70%,
+            rgba(0, 200, 255, 0.10),
+            transparent 20%
         );
 
-    border: 1px solid #34343d;
+    animation:
+        crazyPulse 1.8s infinite;
 
-    padding: 35px 30px;
-
-    border-radius: 4px;
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,0.45);
+    mix-blend-mode: screen;
 }
 
-.report-label {
-    color: #777780;
-    font-size: 10px;
-    letter-spacing: 4px;
+
+@keyframes crazyPulse {
+
+    0%,
+    100% {
+        opacity: 0.25;
+        filter: blur(0px);
+    }
+
+    45% {
+        opacity: 0.8;
+        filter: blur(5px);
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+
+    52% {
+        opacity: 0.9;
+        filter: blur(10px);
+    }
+
+    55% {
+        opacity: 0.25;
+    }
+}
+
+
+/* =======================================================
+   CONTENT
+   ======================================================= */
+
+.block-container {
+
+    position: relative;
+
+    z-index: 5;
+
+    max-width: 850px;
+
+    padding-top: 55px;
+    padding-bottom: 100px;
+}
+
+
+/* =======================================================
+   상단 작은 글씨
+   ======================================================= */
+
+.archive-label {
+
     text-align: center;
-    margin-bottom: 15px;
-}
 
-.report-name {
-    color: #eeeeef;
-    font-size: 17px;
-    text-align: center;
-    letter-spacing: 3px;
-}
+    color: #ff4db8;
 
-.report-line {
-    height: 1px;
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            #3d3d46,
-            transparent
-        );
-
-    margin: 28px 0;
-}
-
-
-/* ---------- 예명 ---------- */
-
-.stage-label {
-    color: #74747d;
-    text-align: center;
     font-size: 11px;
-    letter-spacing: 3px;
-    margin-bottom: 10px;
+
+    letter-spacing: 6px;
+
+    font-weight: 900;
+
+    margin-bottom: 22px;
+
+    text-shadow:
+        0 0 5px #ff008c,
+        0 0 15px #ff008c,
+        0 0 30px #8c00ff;
+
+    animation:
+        labelFlash 1.5s infinite alternate;
 }
 
-.stage-name {
+
+@keyframes labelFlash {
+
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =======================================================
+   메인 타이틀
+   ======================================================= */
+
+.main-title {
+
     text-align: center;
 
-    color: #c5b8ff;
+    font-size: 58px;
 
-    font-size: 64px;
-    font-weight: 900;
+    line-height: 0.95;
+
+    font-weight: 1000;
 
     letter-spacing: -3px;
 
+    color: #ffffff;
+
     text-shadow:
-        0 0 25px rgba(170,150,255,0.22);
+        0 0 5px #ffffff,
+        0 0 15px #ff00aa,
+        0 0 35px #ff00aa,
+        0 0 70px #7300ff;
 
-    margin-bottom: 8px;
+    animation:
+        titleChaos 2.2s infinite;
+
 }
 
-.stage-pronunciation {
+
+.main-title span {
+
+    color: #ff55c8;
+
+    text-shadow:
+        0 0 5px #ff55c8,
+        0 0 15px #ff00aa,
+        0 0 35px #ff00aa,
+        0 0 70px #7700ff;
+
+}
+
+
+@keyframes titleChaos {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+        filter: brightness(1);
+    }
+
+    45% {
+        transform: translate(-1px, 1px);
+        filter: brightness(1.2);
+    }
+
+    48% {
+        transform: translate(2px, -1px);
+        filter: brightness(2);
+    }
+
+    50% {
+        transform: translate(-2px, 1px);
+        filter: brightness(1);
+    }
+
+    52% {
+        transform: translate(1px, -2px);
+        filter: brightness(1.8);
+    }
+}
+
+
+/* =======================================================
+   부제
+   ======================================================= */
+
+.main-subtitle {
+
     text-align: center;
-    color: #6e6e78;
-    font-size: 11px;
-    letter-spacing: 2px;
+
+    color: #c2b5cc;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    margin-top: 20px;
+
+    margin-bottom: 45px;
+
+    text-shadow:
+        0 0 10px rgba(255, 0, 150, 0.4);
 }
 
 
-/* ---------- 포지션 ---------- */
+/* =======================================================
+   입력 카드
+   ======================================================= */
 
-.position-box {
+.input-panel {
+
+    position: relative;
+
     background:
         linear-gradient(
             135deg,
-            rgba(145,125,235,0.10),
-            rgba(255,255,255,0.015)
+            rgba(35, 10, 40, 0.92),
+            rgba(5, 5, 14, 0.94)
         );
 
-    border: 1px solid #353344;
+    border: 1px solid #ff20ad;
 
-    padding: 25px;
+    padding: 30px;
 
-    margin-top: 30px;
+    border-radius: 8px;
 
-    text-align: center;
-}
+    box-shadow:
+        0 0 10px rgba(255, 0, 150, 0.5),
+        0 0 35px rgba(255, 0, 150, 0.25),
+        inset 0 0 30px rgba(140, 0, 255, 0.08);
 
-.position-label {
-    color: #777482;
-    font-size: 10px;
-    letter-spacing: 3px;
-    margin-bottom: 8px;
-}
+    animation:
+        cardGlow 2s infinite alternate;
 
-.position-name {
-    color: #f0eff5;
-    font-size: 27px;
-    font-weight: 800;
-}
-
-
-/* ---------- 근거 ---------- */
-
-.evidence-title {
-    color: #e5e4e9;
-    font-size: 16px;
-    font-weight: 800;
-
-    margin-top: 35px;
     margin-bottom: 20px;
 }
 
-.evidence-item {
-    border-left: 2px solid #7161b8;
 
-    padding: 14px 17px;
+@keyframes cardGlow {
 
-    background: rgba(255,255,255,0.025);
+    from {
+        box-shadow:
+            0 0 8px rgba(255,0,150,0.35),
+            0 0 20px rgba(140,0,255,0.15);
+    }
 
-    margin-bottom: 10px;
-}
-
-.evidence-number {
-    color: #8271cf;
-    font-size: 10px;
-    letter-spacing: 2px;
-    font-weight: 800;
-}
-
-.evidence-text {
-    color: #a8a8b0;
-    font-size: 13px;
-    line-height: 1.8;
-    margin-top: 5px;
+    to {
+        box-shadow:
+            0 0 18px rgba(255,0,150,0.8),
+            0 0 55px rgba(140,0,255,0.35);
+    }
 }
 
 
-/* ---------- 콘셉트 ---------- */
+.input-label {
 
-.concept-box {
-    margin-top: 30px;
+    color: #ff75ce;
 
-    padding: 22px;
-
-    border: 1px solid #2e2e36;
-
-    background: #111116;
-}
-
-.concept-label {
-    color: #777780;
-    font-size: 10px;
-    letter-spacing: 3px;
-    margin-bottom: 10px;
-}
-
-.concept-name {
-    color: #d5d0ed;
-    font-size: 19px;
-    font-weight: 700;
-}
-
-.concept-description {
-    color: #797982;
     font-size: 12px;
-    line-height: 1.8;
+
+    letter-spacing: 3px;
+
+    font-weight: 900;
+}
+
+
+.input-description {
+
+    color: #8f8295;
+
+    font-size: 12px;
+
     margin-top: 8px;
 }
 
 
-/* ---------- 점수 ---------- */
+/* =======================================================
+   STREAMLIT INPUT
+   ======================================================= */
 
-.analysis-title {
-    color: #e4e3e8;
-    font-size: 16px;
-    font-weight: 800;
-    margin-top: 35px;
-    margin-bottom: 18px;
-}
+div[data-baseweb="input"] {
 
-.metric-row {
-    display: flex;
-    justify-content: space-between;
+    background:
+        rgba(5, 4, 10, 0.95) !important;
 
-    color: #85858e;
+    border: 1px solid #59245b !important;
 
-    font-size: 12px;
+    border-radius: 5px !important;
 
-    padding: 10px 0;
+    box-shadow:
+        0 0 12px rgba(255, 0, 150, 0.15);
 
-    border-bottom: 1px solid #222229;
-}
-
-.metric-value {
-    color: #bdb5e9;
-    font-weight: 700;
 }
 
 
-/* ---------- 하단 ---------- */
+div[data-baseweb="input"]:focus-within {
 
-.disclaimer {
-    text-align: center;
+    border-color: #ff35bb !important;
 
-    color: #55555d;
+    box-shadow:
+        0 0 8px #ff00aa,
+        0 0 25px rgba(255,0,170,0.45) !important;
 
-    font-size: 10px;
-
-    line-height: 1.8;
-
-    margin-top: 35px;
 }
 
-.footer {
-    text-align: center;
 
-    color: #3f3f47;
+div[data-baseweb="input"] input {
 
-    font-size: 10px;
+    color: #ffffff !important;
+
+    caret-color: #ff42bf !important;
+
+}
+
+
+/* =======================================================
+   BUTTON
+   ======================================================= */
+
+div.stButton > button {
+
+    width: 100%;
+
+    border: 1px solid #ff54c7;
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6e0068,
+            #ff008c,
+            #6500ff
+        );
+
+    background-size: 250% 100%;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 900;
 
     letter-spacing: 2px;
 
-    margin-top: 55px;
+    padding: 15px;
+
+    box-shadow:
+        0 0 10px #ff008c,
+        0 0 30px rgba(255,0,140,0.35);
+
+    animation:
+        buttonMove 2s linear infinite;
+
+}
+
+
+@keyframes buttonMove {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 250% 50%;
+    }
+}
+
+
+div.stButton > button:hover {
+
+    transform: scale(1.02);
+
+    box-shadow:
+        0 0 15px #ff00aa,
+        0 0 50px #7700ff;
+
+}
+
+
+/* =======================================================
+   RESULT
+   ======================================================= */
+
+.result-container {
+
+    margin-top: 35px;
+
+    padding: 38px 30px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25, 10, 30, 0.97),
+            rgba(4, 4, 10, 0.97)
+        );
+
+    border: 1px solid #9b37ff;
+
+    box-shadow:
+        0 0 12px rgba(255,0,150,0.45),
+        0 0 40px rgba(120,0,255,0.25),
+        inset 0 0 50px rgba(255,0,150,0.03);
+
+}
+
+
+/* =======================================================
+   REPORT
+   ======================================================= */
+
+.report-label {
+
+    text-align: center;
+
+    color: #ff46bc;
+
+    font-size: 10px;
+
+    letter-spacing: 5px;
+
+    font-weight: 900;
+
+}
+
+
+.report-name {
+
+    text-align: center;
+
+    color: #d8ccd9;
+
+    font-size: 18px;
+
+    letter-spacing: 4px;
+
+    margin-top: 12px;
+}
+
+
+.report-line {
+
+    height: 1px;
+
+    margin: 30px 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #ff00aa,
+            #8c00ff,
+            transparent
+        );
+
+    box-shadow:
+        0 0 10px #ff00aa;
+}
+
+
+/* =======================================================
+   STAGE NAME
+   ======================================================= */
+
+.stage-label {
+
+    text-align: center;
+
+    color: #8f8195;
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+}
+
+
+.stage-name {
+
+    text-align: center;
+
+    font-size: 70px;
+
+    font-weight: 1000;
+
+    letter-spacing: -4px;
+
+    color: #ffffff;
+
+    margin-top: 8px;
+
+    text-shadow:
+        0 0 5px white,
+        0 0 15px #ff00aa,
+        0 0 35px #ff00aa,
+        0 0 65px #7700ff;
+
+    animation:
+        stagePulse 1.7s infinite alternate;
+}
+
+
+@keyframes stagePulse {
+
+    from {
+        filter: brightness(0.9);
+    }
+
+    to {
+        filter: brightness(1.5);
+    }
+}
+
+
+.stage-pronunciation {
+
+    text-align: center;
+
+    color: #9f8da6;
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+}
+
+
+/* =======================================================
+   POSITION
+   ======================================================= */
+
+.position-box {
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(255,0,150,0.10),
+            rgba(100,0,255,0.10)
+        );
+
+    border: 1px solid #5e3b78;
+
+    box-shadow:
+        0 0 25px rgba(120,0,255,0.15);
+}
+
+
+.position-label {
+
+    color: #93859c;
+
+    font-size: 10px;
+
+    letter-spacing: 4px;
+}
+
+
+.position-name {
+
+    color: #ffffff;
+
+    font-size: 29px;
+
+    font-weight: 900;
+
+    margin-top: 8px;
+
+    text-shadow:
+        0 0 10px rgba(255,0,170,0.5);
+}
+
+
+/* =======================================================
+   EVIDENCE
+   ======================================================= */
+
+.evidence-title {
+
+    color: #f0eaf2;
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    margin-top: 38px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.evidence-item {
+
+    padding: 16px;
+
+    margin-bottom: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,0,150,0.07),
+            rgba(100,0,255,0.03)
+        );
+
+    border-left: 3px solid #ff18ae;
+
+    box-shadow:
+        0 0 12px rgba(255,0,150,0.06);
+}
+
+
+.evidence-number {
+
+    color: #ff45c0;
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    font-weight: 900;
+}
+
+
+.evidence-text {
+
+    color: #aaa0ad;
+
+    font-size: 13px;
+
+    line-height: 1.9;
+
+    margin-top: 5px;
+}
+
+
+/* =======================================================
+   ANALYSIS
+   ======================================================= */
+
+.analysis-title {
+
+    color: #f0eaf2;
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    margin-top: 38px;
+
+    margin-bottom: 15px;
+}
+
+
+.metric-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid #27202b;
+
+    color: #817681;
+
+    font-size: 12px;
+}
+
+
+.metric-value {
+
+    color: #ff76ce;
+
+    font-weight: 900;
+
+    text-shadow:
+        0 0 8px rgba(255,0,150,0.5);
+}
+
+
+/* =======================================================
+   CONCEPT
+   ======================================================= */
+
+.concept-box {
+
+    margin-top: 30px;
+
+    padding: 22px;
+
+    border: 1px solid #422d52;
+
+    background:
+        rgba(15, 7, 20, 0.9);
+
+}
+
+
+.concept-label {
+
+    color: #ff50bf;
+
+    font-size: 10px;
+
+    letter-spacing: 4px;
+
+}
+
+
+.concept-name {
+
+    color: #eee9f1;
+
+    font-size: 20px;
+
+    font-weight: 900;
+
+    margin-top: 7px;
+}
+
+
+.concept-description {
+
+    color: #817681;
+
+    font-size: 12px;
+
+    line-height: 1.9;
+
+    margin-top: 7px;
+}
+
+
+/* =======================================================
+   DISCLAIMER
+   ======================================================= */
+
+.disclaimer {
+
+    text-align: center;
+
+    color: #625766;
+
+    font-size: 10px;
+
+    line-height: 1.9;
+
+    margin-top: 35px;
+}
+
+
+/* =======================================================
+   FOOTER
+   ======================================================= */
+
+.footer {
+
+    text-align: center;
+
+    color: #4f4055;
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    margin-top: 60px;
 }
 
 </style>
@@ -410,7 +957,7 @@ div.stButton > button:hover {
 
 
 # =========================================================
-# 데이터
+# DATA
 # =========================================================
 
 stage_names = [
@@ -476,15 +1023,13 @@ concepts = [
 
 
 # =========================================================
-# 한글 이름 분석
+# NAME ANALYSIS
 # =========================================================
 
 def analyze_name(name):
 
-    # 한글만 추출
     korean = re.findall(r"[가-힣]", name)
 
-    # 영문 등도 고려
     letters = re.findall(r"[A-Za-z가-힣]", name)
 
     length = len(letters)
@@ -492,69 +1037,101 @@ def analyze_name(name):
     if length == 0:
         length = 1
 
-    # 초성
     initials = []
 
+    initial_list = [
+        "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ",
+        "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ",
+        "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ",
+        "ㅋ", "ㅌ", "ㅍ", "ㅎ"
+    ]
+
     for char in korean:
+
         code = ord(char) - 0xAC00
 
         if 0 <= code <= 11171:
+
             initial_index = code // 588
 
-            initial_list = [
-                "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ",
-                "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ",
-                "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ",
-                "ㅋ", "ㅌ", "ㅍ", "ㅎ"
-            ]
+            initials.append(
+                initial_list[initial_index]
+            )
 
-            initials.append(initial_list[initial_index])
 
-    # 종성 여부
     final_count = 0
 
     for char in korean:
+
         code = ord(char) - 0xAC00
 
         if 0 <= code <= 11171:
+
             if code % 28 != 0:
                 final_count += 1
 
-    # 모음 성격
-    vowel_score = 0
 
-    vowel_patterns = {
+    vowel_list = [
+        "ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ",
+        "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ",
+        "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ",
+        "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ",
+        "ㅣ"
+    ]
+
+
+    vowel_score_map = {
+
         "ㅏ": 1,
+        "ㅐ": 1,
         "ㅑ": 2,
+        "ㅒ": 2,
+
         "ㅓ": -1,
+        "ㅔ": -1,
         "ㅕ": -2,
+        "ㅖ": -2,
+
         "ㅗ": 2,
+        "ㅘ": 2,
+        "ㅙ": 2,
+        "ㅚ": 1,
+
         "ㅛ": 2,
+
         "ㅜ": -2,
+        "ㅝ": -2,
+        "ㅞ": -2,
+        "ㅟ": -1,
+
         "ㅠ": -1,
+
         "ㅡ": 0,
+        "ㅢ": 0,
+
         "ㅣ": 1
     }
 
+
+    vowel_score = 0
+
     for char in korean:
-        # 아주 단순한 음절 코드 기반 분석
+
         code = ord(char) - 0xAC00
 
         if 0 <= code <= 11171:
 
             vowel_index = (code % 588) // 28
 
-            vowel_list = [
-                "ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ",
-                "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ",
-                "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ",
-                "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ",
-                "ㅣ"
-            ]
-
             if vowel_index < len(vowel_list):
+
                 vowel = vowel_list[vowel_index]
-                vowel_score += vowel_patterns.get(vowel, 0)
+
+                vowel_score += vowel_score_map.get(
+                    vowel,
+                    0
+                )
+
 
     return {
         "length": length,
@@ -566,7 +1143,7 @@ def analyze_name(name):
 
 
 # =========================================================
-# 이름 → 결과 결정
+# RESULT ENGINE
 # =========================================================
 
 def make_result(name):
@@ -580,24 +1157,27 @@ def make_result(name):
         16
     )
 
-    # 결과가 이름에 따라 일정하게 나오도록
-    index1 = seed % len(stage_names)
 
-    index2 = (seed // 17) % len(positions)
+    stage_index = seed % len(stage_names)
 
-    index3 = (seed // 31) % len(concepts)
+    position_index = (
+        seed // 17
+    ) % len(positions)
 
-    stage = stage_names[index1]
+    concept_index = (
+        seed // 31
+    ) % len(concepts)
 
-    position = positions[index2]
 
-    concept = concepts[index3]
+    stage = stage_names[stage_index]
 
-    # -----------------------------------------------------
-    # 예명 발음
-    # -----------------------------------------------------
+    position = positions[position_index]
+
+    concept = concepts[concept_index]
+
 
     pronunciation = {
+
         "LUNE": "룬",
         "NOIR": "누아르",
         "RIN": "린",
@@ -616,75 +1196,89 @@ def make_result(name):
         "REI": "레이"
     }
 
+
     pron = pronunciation[stage]
 
-    # -----------------------------------------------------
-    # 근거 생성
-    # -----------------------------------------------------
 
     evidence = []
 
-    # 근거 1
+
     evidence.append(
-        f"입력된 이름은 총 {data['length']}개의 문자 단위로 분석되었습니다. "
-        f"이 길이는 무대에서 빠르게 발음했을 때 이름이 뭉개지지 않는 "
-        f"중단 길이 구조로 분류했습니다."
+        f"입력된 이름은 총 {data['length']}개의 문자 단위로 "
+        f"분석되었습니다. 이 길이는 무대에서 빠르게 발음했을 때 "
+        f"이름이 뭉개지지 않는 구조로 분류했습니다."
     )
 
-    # 근거 2
+
     if data["initials"]:
-        initial_text = " · ".join(data["initials"])
+
+        initial_text = " · ".join(
+            data["initials"]
+        )
 
         evidence.append(
             f"초성 구조는 [{initial_text}]로 분석됩니다. "
             f"초성의 변화 폭이 있는 이름은 발음에 리듬이 생기기 때문에 "
-            f"퍼포먼스 중심의 예명 설계에 적합하다고 판단했습니다."
-        )
-    else:
-        evidence.append(
-            "한글 초성이 없는 이름으로 분석되어 철자 자체의 시각적 인상을 "
-            "예명 결정에 더 강하게 반영했습니다."
+            f"무대에서 이름 자체가 하나의 퍼포먼스 요소로 작동할 가능성이 "
+            f"높다고 판단했습니다."
         )
 
-    # 근거 3
+    else:
+
+        evidence.append(
+            "한글 초성이 없는 이름으로 분석되어 "
+            "철자의 시각적 형태와 발음의 길이를 더 강하게 반영했습니다."
+        )
+
+
     if data["final_count"] >= 2:
+
         evidence.append(
             f"총 {data['final_count']}개의 종성 구조가 확인되었습니다. "
-            f"종성이 많은 이름은 발음의 끝부분에 힘이 생기는 경향이 있다고 보고, "
-            f"무대에서 존재감이 강하게 느껴지는 포지션과 연결했습니다."
-        )
-    else:
-        evidence.append(
-            "종성 구조가 비교적 가벼운 편입니다. "
-            "끝소리가 빠르게 정리되는 이름은 보컬이나 댄스 포지션에서 "
-            "짧은 후렴구를 강조하기 좋은 이름 구조로 해석했습니다."
+            "종성이 많은 이름은 발음의 끝부분에 힘이 생기는 구조로 보고 "
+            "강한 존재감을 요구하는 포지션과 연결했습니다."
         )
 
-    # 근거 4
+    else:
+
+        evidence.append(
+            "종성 구조가 비교적 가볍습니다. "
+            "끝소리가 빠르게 정리되는 이름은 후렴구에서 이름을 "
+            "반복했을 때 선명하게 들리는 구조로 해석했습니다."
+        )
+
+
     if data["vowel_score"] > 1:
+
         evidence.append(
-            "모음 분석에서 밝은 방향의 점수가 상대적으로 높게 나타났습니다. "
-            "이에 따라 밝은 고음이나 선명한 포인트를 담당하는 역할을 "
-            "배정하는 방향으로 결과를 조정했습니다."
-        )
-    elif data["vowel_score"] < -1:
-        evidence.append(
-            "모음 분석에서 낮고 무게감 있는 방향의 점수가 상대적으로 높았습니다. "
-            "따라서 저음과 강한 표정 연출이 가능한 포지션을 우선적으로 고려했습니다."
-        )
-    else:
-        evidence.append(
-            "모음의 밝고 어두운 방향성이 한쪽으로 치우치지 않았습니다. "
-            "이런 균형형 구조는 특정 포지션에 한정하기보다 팀의 중심 역할을 "
-            "수행하는 방향으로 해석했습니다."
+            "모음 분석에서 밝은 방향의 값이 상대적으로 높게 "
+            "나타났습니다. 따라서 고음이나 선명한 포인트를 담당하는 "
+            "역할과 연결하는 방향으로 분석했습니다."
         )
 
-    # 근거 5
+    elif data["vowel_score"] < -1:
+
+        evidence.append(
+            "모음 분석에서 무게감 있는 방향의 값이 상대적으로 "
+            "높게 나타났습니다. 따라서 저음과 강한 표현력을 요구하는 "
+            "포지션을 우선적으로 고려했습니다."
+        )
+
+    else:
+
+        evidence.append(
+            "모음의 밝고 어두운 방향성이 비교적 균형을 이루고 있습니다. "
+            "이러한 균형형 구조는 특정 파트에만 의존하지 않는 "
+            "올라운드형 무대 역할과 연결하기 적합하다고 판단했습니다."
+        )
+
+
     evidence.append(
-        f"최종 예명 '{stage}'는 원래 이름의 음절을 그대로 옮긴 것이 아니라, "
-        f"무대에서 기억하기 쉬운 짧은 음절 구조와 시각적인 철자 형태를 기준으로 "
-        f"선택되었습니다. 한국어 발음은 '{pron}'으로 설정했습니다."
+        f"최종 예명 '{stage}'는 원래 이름을 단순히 줄인 것이 아니라 "
+        "무대에서 빠르게 인식할 수 있는 철자 수, 시각적인 균형, "
+        "발음의 짧은 호흡을 기준으로 결정되었습니다."
     )
+
 
     return {
         "stage": stage,
@@ -701,25 +1295,35 @@ def make_result(name):
 # =========================================================
 
 st.markdown(
-    '<div class="archive-label">CONFIDENTIAL / ENTERTAINMENT DIVISION</div>',
+    '<div class="archive-label">⚡ CLASSIFIED ENTERTAINMENT SYSTEM ⚡</div>',
     unsafe_allow_html=True
 )
+
 
 st.markdown(
     """
 <div class="main-title">
+
 THE <span>DEBUT</span><br>
+
 ARCHIVE
+
 </div>
 """,
     unsafe_allow_html=True
 )
 
+
 st.markdown(
     """
 <div class="main-subtitle">
+
 당신의 이름이 무대 위에서 어떻게 불려야 하는지 분석합니다.<br>
-이름의 구조 · 발음 · 리듬 · 음절 패턴을 기반으로 예명과 포지션을 결정합니다.
+
+이름의 구조 · 발음 · 리듬 · 음절 패턴을 기반으로<br>
+
+가장 적합한 <b>예명과 포지션</b>을 산출합니다.
+
 </div>
 """,
     unsafe_allow_html=True
@@ -727,7 +1331,7 @@ st.markdown(
 
 
 # =========================================================
-# INPUT
+# INPUT PANEL
 # =========================================================
 
 st.markdown(
@@ -735,7 +1339,7 @@ st.markdown(
 <div class="input-panel">
 
 <div class="input-label">
-CANDIDATE NAME
+CANDIDATE / NAME
 </div>
 
 <div class="input-description">
@@ -746,6 +1350,7 @@ CANDIDATE NAME
 """,
     unsafe_allow_html=True
 )
+
 
 name = st.text_input(
     "이름",
@@ -759,29 +1364,41 @@ name = st.text_input(
 # BUTTON
 # =========================================================
 
-if st.button("✦ BEGIN THE ANALYSIS"):
+if st.button("⚡ BEGIN THE DEBUT ANALYSIS ⚡"):
 
     if not name.strip():
 
-        st.warning("분석할 이름을 입력하십시오.")
+        st.warning(
+            "⚠️ 분석할 이름을 입력하십시오."
+        )
 
     else:
 
-        result = make_result(name.strip())
+        result = make_result(
+            name.strip()
+        )
 
-        safe_name = html.escape(name.strip())
+
+        safe_name = html.escape(
+            name.strip()
+        )
+
 
         stage = result["stage"]
+
         pron = result["pronunciation"]
+
         position = result["position"]
+
         concept_name = result["concept"][0]
+
         concept_description = result["concept"][1]
 
         data = result["data"]
 
 
         # =================================================
-        # RESULT
+        # RESULT HEADER
         # =================================================
 
         st.markdown(
@@ -789,7 +1406,7 @@ if st.button("✦ BEGIN THE ANALYSIS"):
 <div class="result-container">
 
 <div class="report-label">
-OFFICIAL DEBUT ANALYSIS
+⚡ OFFICIAL DEBUT ANALYSIS ⚡
 </div>
 
 <div class="report-name">
@@ -807,7 +1424,7 @@ RECOMMENDED STAGE NAME
 </div>
 
 <div class="stage-pronunciation">
-/{pron}/
+/ {pron} /
 </div>
 
 <div class="position-box">
@@ -825,21 +1442,21 @@ PRIMARY POSITION
 <div class="evidence-title">
 WHY THIS RESULT?
 </div>
+
+</div>
 """,
             unsafe_allow_html=True
         )
 
 
         # =================================================
-        # 근거 출력
+        # EVIDENCE
         # =================================================
 
         for i, item in enumerate(
             result["evidence"],
             start=1
         ):
-
-            safe_item = html.escape(item)
 
             st.markdown(
                 f"""
@@ -850,7 +1467,7 @@ EVIDENCE {i:02d}
 </div>
 
 <div class="evidence-text">
-{safe_item}
+{html.escape(item)}
 </div>
 
 </div>
@@ -860,38 +1477,59 @@ EVIDENCE {i:02d}
 
 
         # =================================================
-        # 분석 수치
+        # ANALYSIS
         # =================================================
 
         st.markdown(
             """
 <div class="analysis-title">
-NAME STRUCTURE ANALYSIS
+⚡ NAME STRUCTURE ANALYSIS
 </div>
 """,
             unsafe_allow_html=True
         )
 
+
         st.markdown(
             f"""
 <div class="metric-row">
-    <span>문자 수</span>
-    <span class="metric-value">{data["length"]}</span>
+
+<span>문자 수</span>
+
+<span class="metric-value">
+{data["length"]}
+</span>
+
 </div>
 
 <div class="metric-row">
-    <span>한글 음절 수</span>
-    <span class="metric-value">{data["korean_count"]}</span>
+
+<span>한글 음절 수</span>
+
+<span class="metric-value">
+{data["korean_count"]}
+</span>
+
 </div>
 
 <div class="metric-row">
-    <span>종성 포함 음절</span>
-    <span class="metric-value">{data["final_count"]}</span>
+
+<span>종성 포함 음절</span>
+
+<span class="metric-value">
+{data["final_count"]}
+</span>
+
 </div>
 
 <div class="metric-row">
-    <span>모음 방향 지수</span>
-    <span class="metric-value">{data["vowel_score"]}</span>
+
+<span>모음 방향 지수</span>
+
+<span class="metric-value">
+{data["vowel_score"]}
+</span>
+
 </div>
 """,
             unsafe_allow_html=True
@@ -899,7 +1537,7 @@ NAME STRUCTURE ANALYSIS
 
 
         # =================================================
-        # 콘셉트
+        # CONCEPT
         # =================================================
 
         st.markdown(
@@ -925,15 +1563,18 @@ DEBUT CONCEPT
 
 
         # =================================================
-        # 마지막
+        # DISCLAIMER
         # =================================================
 
         st.markdown(
             """
 <div class="disclaimer">
-※ 본 분석은 이름의 문자 구조와 발음 등을 이용한
+
+※ 본 결과는 이름의 문자 구조와 발음 등을 이용한
 엔터테인먼트용 알고리즘입니다.<br>
-실제 연예기획사의 오디션이나 캐스팅 결과를 의미하지 않습니다.
+
+실제 연예기획사의 캐스팅 또는 오디션 결과를 의미하지 않습니다.
+
 </div>
 """,
             unsafe_allow_html=True
@@ -947,7 +1588,9 @@ DEBUT CONCEPT
 st.markdown(
     """
 <div class="footer">
-THE DEBUT ARCHIVE · INTERNAL ANALYSIS SYSTEM
+
+⚡ THE DEBUT ARCHIVE · SYSTEM ONLINE ⚡
+
 </div>
 """,
     unsafe_allow_html=True
