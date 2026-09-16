@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import hashlib
 import time
+import textwrap
 
 # ==========================================
 # 페이지 설정
